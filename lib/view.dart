@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import 'create_employee.dart';
 import 'employee_model.dart';
 import 'employee_service.dart';
 
@@ -43,30 +44,45 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     }
   }
 
-  Future<List<Employee>> loadJsonFromAssets() async {
-    final String response = await rootBundle.loadString('assets/data.json');
-    final List<dynamic> data = jsonDecode(response);
+  // Future<List<Employee>> loadJsonFromAssets() async {
+  //   final String response = await rootBundle.loadString('assets/data.json');
+  //   final List<dynamic> data = jsonDecode(response);
+  //
+  //   // Convert each JSON object into an Employee
+  //   employees = data.map((e) => Employee.fromJson(e)).toList();
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+  //
+  //   return employees;
+  // }
 
-    // Convert each JSON object into an Employee
-    employees = data.map((e) => Employee.fromJson(e)).toList();
-    setState(() {
-      isLoading = false;
-    });
 
-    return employees;
-  }
 
-//Employees active > 5 years are shown with a green background & text.
+//Employees active > 5 years and status = active are shown with a green background & text.
   bool isMoreThan5Years(DateTime joiningDate, String status) {
     final now = DateTime.now();
     final difference = now.difference(joiningDate).inDays ~/ 365;
     return difference > 5 && status == "active";
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Employee List")),
+      appBar: AppBar(title: const Text("Employee List"),actions: [
+        IconButton(onPressed: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (context) => const CreateEmployee(),
+            ),
+          );
+          _loadEmployees();
+        }, icon: Icon(Icons.add)),
+      ], ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : errorMessage != null
@@ -83,7 +99,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
           return Card(
             color: highlight
                 ? Colors.green.shade100
-                : Colors.white,
+                : emp.status== 'inactive'? Colors.red.shade100 : Colors.white,
             child: ListTile(
               title: Text(
                 emp.name,
