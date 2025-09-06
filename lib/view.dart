@@ -54,9 +54,9 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
         centerTitle: true,
         backgroundColor: Colors.purple,
         elevation: 6,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
+        // shape: const RoundedRectangleBorder(
+        //   borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        // ),
         actions: [
           IconButton(
             onPressed: () async {
@@ -98,7 +98,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
           isMoreThan5Years(emp.joiningDate, emp.status);
 
           return Card(
-            elevation: 6,
+            elevation: 4,
             shadowColor: Colors.purple.withOpacity(0.3),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -111,16 +111,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
             margin: const EdgeInsets.symmetric(
                 vertical: 8, horizontal: 4),
             child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              leading: CircleAvatar(
-                backgroundColor: Colors.purple.shade200,
-                child: Text(
-                  emp.name[0].toUpperCase(),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-              ),
+              // contentPadding: const EdgeInsets.all(16),
               title: Text(
                 emp.name,
                 style: TextStyle(
@@ -138,16 +129,9 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                   style: const TextStyle(height: 1.3),
                 ),
               ),
-              isThreeLine: true,
-              trailing: Icon(
-                emp.status == "active"
-                    ? Icons.check_circle
-                    : Icons.cancel,
-                color: emp.status == "active"
-                    ? Colors.green
-                    : Colors.red,
+              // isThreeLine: true,
+
               ),
-            ),
           );
         },
       ),
