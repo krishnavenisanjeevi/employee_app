@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import 'create_employee.dart';
@@ -23,7 +20,6 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
   @override
   void initState() {
     super.initState();
-    // loadJsonFromAssets();
     _loadEmployees();
   }
 
@@ -35,61 +31,66 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
         isLoading = false;
       });
     } catch (e) {
-
       setState(() {
         errorMessage = e.toString();
-        print(errorMessage);
         isLoading = false;
       });
     }
   }
 
-  // Future<List<Employee>> loadJsonFromAssets() async {
-  //   final String response = await rootBundle.loadString('assets/data.json');
-  //   final List<dynamic> data = jsonDecode(response);
-  //
-  //   // Convert each JSON object into an Employee
-  //   employees = data.map((e) => Employee.fromJson(e)).toList();
-  //   setState(() {
-  //     isLoading = false;
-  //   });
-  //
-  //   return employees;
-  // }
-
-
-
-//Employees active > 5 years and status = active are shown with a green background & text.
+  //Employees active > 5 years and status = active are shown with a green background
   bool isMoreThan5Years(DateTime joiningDate, String status) {
     final now = DateTime.now();
     final difference = now.difference(joiningDate).inDays ~/ 365;
     return difference > 5 && status == "active";
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Employee List"),actions: [
-        IconButton(onPressed: (){
-          Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (context) => const CreateEmployee(),
-            ),
-          );
-          _loadEmployees();
-        }, icon: Icon(Icons.add)),
-      ], ),
+      backgroundColor: Colors.purple.shade50,
+      appBar: AppBar(
+        title: const Text("Employee List"),
+        centerTitle: true,
+        backgroundColor: Colors.purple,
+        elevation: 6,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (context) => const CreateEmployee(),
+                ),
+              );
+              _loadEmployees();
+            },
+            icon: const Icon(Icons.add, color: Colors.white),
+          ),
+        ],
+      ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.purple))
           : errorMessage != null
-          ? Center(child: Text("Error: $errorMessage"))
+          ? Center(
+        child: Text(
+          "Error: $errorMessage",
+          style: const TextStyle(color: Colors.red),
+        ),
+      )
           : employees.isEmpty
-          ? const Center(child: Text("No employees found"))
+          ? const Center(
+        child: Text(
+          "No employees found",
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      )
           : ListView.builder(
+        padding: const EdgeInsets.all(12),
         itemCount: employees.length,
         itemBuilder: (context, index) {
           final emp = employees[index];
@@ -97,21 +98,55 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
           isMoreThan5Years(emp.joiningDate, emp.status);
 
           return Card(
+            elevation: 6,
+            shadowColor: Colors.purple.withOpacity(0.3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             color: highlight
                 ? Colors.green.shade100
-                : emp.status== 'inactive'? Colors.red.shade100 : Colors.white,
+                : emp.status == 'inactive'
+                ? Colors.red.shade100
+                : Colors.white,
+            margin: const EdgeInsets.symmetric(
+                vertical: 8, horizontal: 4),
             child: ListTile(
+              contentPadding: const EdgeInsets.all(16),
+              leading: CircleAvatar(
+                backgroundColor: Colors.purple.shade200,
+                child: Text(
+                  emp.name[0].toUpperCase(),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              ),
               title: Text(
                 emp.name,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: highlight ? Colors.green : Colors.black,
+                  fontSize: 18,
+                  color: highlight
+                      ? Colors.green.shade800
+                      : Colors.purple.shade800,
                 ),
               ),
-              subtitle: Text(
-                "${emp.position}\nJoined: ${DateFormat('yyyy-MM-dd').format(emp.joiningDate)}",
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  "${emp.position}\nJoined: ${DateFormat('yyyy-MM-dd').format(emp.joiningDate)}",
+                  style: const TextStyle(height: 1.3),
+                ),
               ),
               isThreeLine: true,
+              trailing: Icon(
+                emp.status == "active"
+                    ? Icons.check_circle
+                    : Icons.cancel,
+                color: emp.status == "active"
+                    ? Colors.green
+                    : Colors.red,
+              ),
             ),
           );
         },

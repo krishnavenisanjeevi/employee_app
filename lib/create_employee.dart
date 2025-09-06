@@ -18,6 +18,25 @@ class _CreateEmployeeState extends State<CreateEmployee> {
   final _position = TextEditingController();
   String _status = 'active';
 
+  DateTime? _selectedDate;
+  final TextEditingController _dateController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2050),
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,6 +111,24 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                       value!.isEmpty ? 'Please enter position' : null,
                     ),
                     const SizedBox(height: 15),
+                   TextFormField(
+                  controller: _dateController,
+                  readOnly: true, // prevent manual typing
+                  decoration: InputDecoration(
+                    labelText: "Joining Date",
+                    prefixIcon: IconButton(
+                      icon: Icon(Icons.calendar_today, color: Colors.purple),
+                      onPressed: () => _selectDate(context),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onTap: () => _selectDate(context), // also opens when tapping the field
+                  validator: (value) =>
+                  value!.isEmpty ? "Please select a joining date" : null,
+                ),
+                    const SizedBox(height: 15),
                     DropdownButtonFormField<String>(
                       value: _status,
                       decoration: InputDecoration(
@@ -128,14 +165,14 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                         ),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            String formattedDate =
-                            DateFormat('yyyy-MM-dd').format(DateTime.now());
+                            // String formattedDate =
+                            // DateFormat('yyyy-MM-dd').format(DateTime.now());
 
                             Employee employee = Employee(
                               id: int.parse(_id.text),
                               name: _name.text,
                               position: _position.text,
-                              joiningDate: DateTime.parse(formattedDate),
+                              joiningDate: DateTime.parse(_dateController.text),
                               status: _status,
                             );
 
